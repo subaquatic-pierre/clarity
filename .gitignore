@@ -1,5 +1,7 @@
 data/
 agent_data/
+anythingllm/
+ollama/
 .venv/
 **/__pycache__/
 

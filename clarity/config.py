@@ -37,8 +37,8 @@ class Config:
         "PLANE_PROJECT_ID", "1e8bde5b-9e49-45a4-8b43-10341429f1e3"
     )
 
-    TRANSCRIPT_REL_PATH = "agent_data/transcripts"
-    WORK_PACKAGE_REL_PATH = "agent_data/work"
+    TRANSCRIPT_REL_PATH = "data/transcripts"
+    WORK_PACKAGE_REL_PATH = "data/work"
 
     # Construct the final absolute paths using os.path.join
     TRANSCRIPT_PATH = os.path.join(BASE_PATH, TRANSCRIPT_REL_PATH)

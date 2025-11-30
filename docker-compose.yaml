@@ -17,7 +17,7 @@ services:
   #     - LLAMA_HOST=http://ollama:11434
 
   #   volumes:
-  #     - ./data/anythingllm:/app/server/storage
+  #     - ./anythingllm:/app/server/storage
   #     - ./config.env:/app/server/.env
 
   #   restart: unless-stopped
@@ -45,6 +45,6 @@ services:
       - "11434:11434"
 
     volumes:
-      - ./data/ollama:/root/.ollama
+      - ./ollama:/root/.ollama
 
     restart: unless-stopped

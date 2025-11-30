@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 import json
 import os
 import time
@@ -25,6 +24,7 @@ class Storage:
         self.base_path = base_path
         self.transcript_dir = transcript_dir
         self.work_package_dir = work_package_dir
+        self.ensure_data_directories_exist()
 
     def read_transcript(self, filename: str) -> str:
         """
@@ -78,3 +78,18 @@ class Storage:
             logger.error(
                 f"Failed to save work packages to {outpath}. Exception details: {e}"
             )
+
+    def ensure_data_directories_exist(self):
+        """Checks for and creates necessary data directories."""
+
+        # 1. Input Transcripts Directory
+        if not os.path.exists(self.transcript_dir):
+            logger.info(f"Creating transcript directory: {self.transcript_dir}")
+            os.makedirs(self.transcript_dir, exist_ok=True)
+
+        # 2. Output Work Items Directory
+        if not os.path.exists(self.work_package_dir):
+            logger.info(f"Creating work items directory: {self.work_package_dir}")
+            os.makedirs(self.work_package_dir, exist_ok=True)
+
+        logger.info("Data directories are ready.")
