@@ -4,3 +4,4 @@ agent_data/
 **/__pycache__/
 
 .env
+curl.sh
