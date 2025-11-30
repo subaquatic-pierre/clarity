@@ -1,5 +1,6 @@
 from typing import Literal, List, Optional
 from pydantic import BaseModel, Field
+from azure.devops.v7_1.work_item_tracking.models import JsonPatchOperation
 
 
 class WorkItem(BaseModel):
@@ -87,28 +88,40 @@ class WorkItem(BaseModel):
 
         return payload
 
-    def to_azure_json_payload(self) -> dict:
+    def to_azure_json_payload(self, iteration) -> List[JsonPatchOperation]:
         """
-        Converts the WorkItem model into a dictionary formatted for the Plane API issue creation endpoint.
+        Generates the required JSON Patch document for Azure DevOps API creation.
 
-        Expected payload:
-        {
-            "name": "<string>",
-            "description_html": "<string>",
-            "state": "<string>",
-            "assignees": ["<string>"],
-            "priority": "<string>",
-            "labels": ["<string>"],
-            "parent": "<string>",
-            "estimate_point": "<string>",
-            "type": "<string>",
-            "module": "<string>",
-            "start_date": "<string>",
-            "target_date": "<string>",
-        }
+        Azure DevOps requires a list of operations describing changes to fields
+        using 'add', 'replace', or 'remove' operations.
         """
+        patch_document = [
+            # 1. Add Title
+            JsonPatchOperation(op="add", path="/fields/System.Title", value=self.title),
+            # 2. Add Description
+            JsonPatchOperation(
+                op="add", path="/fields/System.Description", value=self.description
+            ),
+        ]
 
-        return {}
+        patch_document.append(
+            JsonPatchOperation(
+                op="add", path="/fields/System.IterationPath", value=iteration
+            )
+        )
+
+        # 3. Optionally add Assignee
+        # if self.assigned_to_email:
+        #     # Assignee is set via the email address in the 'System.AssignedTo' path
+        #     patch_document.append(
+        #         JsonPatchOperation(
+        #             op="add",
+        #             path="/fields/System.AssignedTo",
+        #             value=self.assigned_to_email,
+        #         )
+        #     )
+
+        return patch_document
 
     def build_html_desc(self) -> str:
         # --- 1. Construct the Rich HTML Description ---
@@ -127,6 +140,34 @@ class WorkItem(BaseModel):
         html_desc += "</ol>\n"
 
         return html_desc
+
+    @staticmethod
+    def create_dummy_item() -> "WorkItem":
+        """
+        Creates a simple, default WorkItem instance for testing and demonstration.
+        """
+        return WorkItem(
+            title="Feat: Implement OIDC Authentication Flow",
+            description=(
+                "The team decided in the Q3 planning meeting that all internal tools "
+                "must use OpenID Connect (OIDC) for centralized identity management. "
+                "This task covers integrating the backend service with the Okta IDP."
+            ),
+            acceptance_criteria=[
+                "User is redirected to Okta login page when accessing the tool.",
+                "Successful authentication redirects the user back with a valid token.",
+                "User details (email, name) are correctly mapped and stored in the session.",
+                "A non-authenticated user cannot access any API endpoints.",
+            ],
+            task_breakdown=[
+                "Update dependencies for OIDC client library.",
+                "Configure Okta client ID and secret in environment variables.",
+                "Implement `/login` and `/callback` endpoints.",
+                "Add middleware to validate tokens on all protected routes.",
+            ],
+            task_type="Task",
+            component="Backend: Auth",
+        )
 
 
 class WorkItemList(BaseModel):

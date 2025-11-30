@@ -41,6 +41,12 @@ class Config:
     )
 
     AZURE_PAT = _env_config.get("AZURE_PAT", "1e8bde5b-9e49-45a4-8b43-10341429f1e3")
+    AZURE_PROJECT = _env_config.get(
+        "AZURE_PROJECT", "1e8bde5b-9e49-45a4-8b43-10341429f1e3"
+    )
+    AZURE_WORKSPACE = _env_config.get(
+        "AZURE_WORKSPACE", "1e8bde5b-9e49-45a4-8b43-10341429f1e3"
+    )
 
     TRANSCRIPT_REL_PATH = "data/transcripts"
     WORK_PACKAGE_REL_PATH = "data/work"

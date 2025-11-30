@@ -4,7 +4,7 @@ from typing import List, Any
 from clarity.config import Config
 from clarity.work_item import WorkItem
 from clarity.log import logger
-from clarity.clients.interface import IClient
+from clarity.clients.interface import ClientEnum, IClient
 
 
 class PlaneClient(IClient):
@@ -18,8 +18,11 @@ class PlaneClient(IClient):
             "Content-Type": "application/json",
         }
 
+    def name(self) -> ClientEnum:
+        return ClientEnum.PLANE
+
     def create_work_items(
-        self, workspace_slug: str, project_id: str, work_items: List[WorkItem]
+        self, workspace: str, project: str, work_items: List[WorkItem], _iteration: str
     ) -> bool:
         """
         Posts a list of WorkItem objects to the Plane API to create new issues.
@@ -35,7 +38,7 @@ class PlaneClient(IClient):
 
         # Iterate through work items and track successes
         for item in work_items:
-            if self.create_work_item(workspace_slug, project_id, item):
+            if self.create_work_item(workspace, project, item):
                 success_count += 1
 
         # Final Summary
@@ -52,7 +55,7 @@ class PlaneClient(IClient):
             return False
 
     def create_work_item(
-        self, workspace_slug: str, project_id: str, work_item: WorkItem
+        self, workspace: str, project: str, work_item: WorkItem
     ) -> bool:
 
         payload = work_item.to_plane_json_payload()
@@ -61,7 +64,7 @@ class PlaneClient(IClient):
         )  # Safer way to get name for logs
 
         # Assumes host_url doesn't start with http:// or https://, or handles it safely
-        url = f"{self.host_url}/api/v1/workspaces/{workspace_slug}/projects/{project_id}/work-items/"
+        url = f"{self.host_url}/api/v1/workspaces/{workspace}/projects/{project}/work-items/"
 
         headers = self.headers
 

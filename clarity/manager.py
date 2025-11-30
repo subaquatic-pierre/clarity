@@ -1,7 +1,8 @@
 from typing import List
 
 from clarity.agents.interface import IAgent
-from clarity.clients.interface import IClient
+from clarity.clients.azure import AzureClient
+from clarity.clients.interface import ClientEnum, IClient
 from clarity.log import logger
 from clarity.parse import WorkflowManagerParser
 from clarity.clients.plane import PlaneClient
@@ -25,7 +26,6 @@ class WorkflowManager:
 
         logger.info("WorkflowManager initialized successfully.")
         logger.info(f"Targeting model: {self.config.MODEL_NAME}")
-        logger.info(f"Using Plane Host: {self.config.PLANE_HOST_URL}")
 
     def load_transcript(self, filename: str) -> str:
         """Loads the transcript file content."""
@@ -77,23 +77,27 @@ class WorkflowManager:
         )
         return work_items
 
-    def create_plane_tasks(self, work_items: List[WorkItem]) -> None:
+    def create_tasks(self, work_items: List[WorkItem], iteration: str) -> None:
         """Uploads the generated work items to the Plane project management tool."""
 
-        workspace_slug = self.config.PLANE_WORKSPACE_SLUG
-        project_id = self.config.PLANE_PROJECT_ID
+        # workspace_project = self._get_workspace_project()
+        # workspace = workspace_project[0]
+        # project = workspace_project[1]
+        [workspace, project] = self._get_workspace_project()
 
-        if not workspace_slug or not project_id:
+        if not workspace or not project:
             logger.error(
-                "Plane configuration (workspace_slug/project_id) is missing. Skipping upload."
+                "Configuration (workspace/project) is missing. Skipping upload."
             )
             return
 
         logger.info(
-            f"Attempting to create {len(work_items)} items in Plane Project {project_id}..."
+            f"Attempting to create {len(work_items)} items in Plane Project {project}..."
         )
 
-        success = self.client.create_work_items(workspace_slug, project_id, work_items)
+        success = self.client.create_work_items(
+            workspace, project, work_items, iteration
+        )
 
         if success:
             logger.success("All work items successfully posted to Plane.")
@@ -106,6 +110,7 @@ class WorkflowManager:
         self,
         transcript_filename: str = "meeting_transcript.txt",
         prompt_type: PromptType = PromptType.B,
+        iteration: str = "Iteration 1",
     ) -> None:
         """
         The main execution flow: loads transcript, generates tasks, saves locally, and posts to Plane.
@@ -123,9 +128,21 @@ class WorkflowManager:
         self.save_work_items(work_items)
 
         # 3. Create Plane Tasks
-        self.create_plane_tasks(work_items)
+        self.create_tasks(work_items, iteration)
 
         logger.info("--- WorkflowManager Run Complete ---")
+
+    def _get_workspace_project(self) -> List[str]:
+        if self.client.name() == ClientEnum.AZURE:
+            workspace = self.config.AZURE_WORKSPACE
+            project = self.config.AZURE_PROJECT
+            return [workspace, project]
+        elif self.client.name() == ClientEnum.PLANE:
+            workspace = self.config.PLANE_WORKSPACE_SLUG
+            project = self.config.PLANE_PROJECT_ID
+            return [workspace, project]
+
+        return []
 
     @staticmethod
     def ollama_plane():
@@ -138,5 +155,5 @@ class WorkflowManager:
     def ollama_azure():
         config = Config()
         agent = OllamaAgent(config)
-        client = PlaneClient(config)
+        client = AzureClient(config)
         return WorkflowManager(agent, client, config)
