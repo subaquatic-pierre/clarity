@@ -5,7 +5,7 @@ from clarity.log import logger
 from clarity.work_item import WorkItem, WorkItemList
 
 
-class AgentParser:
+class WorkflowManagerParser:
     @staticmethod
     def parse_work_package_json_str(content: str) -> List[WorkItem]:
         """

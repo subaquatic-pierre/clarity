@@ -1,5 +1,5 @@
-from clarity.agent import Agent
+from clarity.manager import WorkflowManager
 
 if __name__ == "__main__":
-    pm = Agent.default()
+    pm = WorkflowManager.default()
     pm.run()

@@ -66,4 +66,4 @@ class StandardLogger:
 
 # Initialize the logger instance
 # You can give it a specific name relevant to the module or component
-logger = StandardLogger(name="AgentLogger")
+logger = StandardLogger(name="WorkflowManagerLogger")
