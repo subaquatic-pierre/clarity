@@ -15,19 +15,17 @@ ABSOLUTE_BASE_PATH = os.path.abspath(base_directory)
 
 
 class Config:
-
-    # 1. Load .env values into a dictionary
     _env_config: Dict[str, Any] = dotenv_values(
         os.path.join(ABSOLUTE_BASE_PATH, ".env")
     )
 
     BASE_PATH = ABSOLUTE_BASE_PATH
 
-    # Use .get() on the dictionary, falling back to the hardcoded default value
+    # Ollama config
     OLLAMA_HOST_URL = _env_config.get("OLLAMA_HOST_URL", "http://localhost:11434")
     MODEL_NAME = _env_config.get("MODEL_NAME", "llama3:latest")
 
-    # Plane Config (Note: Convert IDs/Tokens to strings, even if they look like strings)
+    # Plane Config
     PLANE_HOST_URL = _env_config.get("PLANE_HOST_URL", "http://localhost:80")
     PLANE_API_TOKEN = _env_config.get(
         "PLANE_API_TOKEN", "plane_api_1e1553d4385f4a1b98c52e0c406ad95a"
@@ -36,6 +34,13 @@ class Config:
     PLANE_PROJECT_ID = _env_config.get(
         "PLANE_PROJECT_ID", "1e8bde5b-9e49-45a4-8b43-10341429f1e3"
     )
+
+    # Azure Config
+    AZURE_HOST_URL = _env_config.get(
+        "AZURE_HOST_URL", "1e8bde5b-9e49-45a4-8b43-10341429f1e3"
+    )
+
+    AZURE_PAT = _env_config.get("AZURE_PAT", "1e8bde5b-9e49-45a4-8b43-10341429f1e3")
 
     TRANSCRIPT_REL_PATH = "data/transcripts"
     WORK_PACKAGE_REL_PATH = "data/work"

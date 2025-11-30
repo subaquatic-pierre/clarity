@@ -87,6 +87,29 @@ class WorkItem(BaseModel):
 
         return payload
 
+    def to_azure_json_payload(self) -> dict:
+        """
+        Converts the WorkItem model into a dictionary formatted for the Plane API issue creation endpoint.
+
+        Expected payload:
+        {
+            "name": "<string>",
+            "description_html": "<string>",
+            "state": "<string>",
+            "assignees": ["<string>"],
+            "priority": "<string>",
+            "labels": ["<string>"],
+            "parent": "<string>",
+            "estimate_point": "<string>",
+            "type": "<string>",
+            "module": "<string>",
+            "start_date": "<string>",
+            "target_date": "<string>",
+        }
+        """
+
+        return {}
+
     def build_html_desc(self) -> str:
         # --- 1. Construct the Rich HTML Description ---
 

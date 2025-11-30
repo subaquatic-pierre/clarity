@@ -1,23 +1,26 @@
-import os
-import json
-from typing import List, Optional
+from typing import List
 
+from clarity.agents.interface import IAgent
+from clarity.clients.interface import IClient
 from clarity.log import logger
 from clarity.parse import WorkflowManagerParser
-from clarity.plane import PlaneClient
+from clarity.clients.plane import PlaneClient
 from clarity.prompt import PromptType, SystemPrompt
 from clarity.storage import Storage
-from clarity.ollama import OllamaClient
+from clarity.agents.ollama import OllamaAgent
 from clarity.work_item import WorkItem
 from clarity.config import Config
 
 
 class WorkflowManager:
+    client: IClient
+    agent: IAgent
 
-    def __init__(self, config: Config):
-        self.ollama_client = OllamaClient(config)
+    def __init__(self, agent: IAgent, client: IClient, config: Config):
+        self.agent = agent
+        self.client = client
+
         self.store = Storage(config)
-        self.plane_client = PlaneClient(config)
         self.config = config
 
         logger.info("WorkflowManager initialized successfully.")
@@ -57,7 +60,7 @@ class WorkflowManager:
         prompt = self.load_prompt(prompt_type)
 
         # 2. Generate Response
-        response = self.ollama_client.generate_work_items(prompt, transcript)
+        response = self.agent.generate_work_items(prompt, transcript)
 
         if not response:
             logger.error("Ollama returned an empty response. Cannot parse work items.")
@@ -90,9 +93,7 @@ class WorkflowManager:
             f"Attempting to create {len(work_items)} items in Plane Project {project_id}..."
         )
 
-        success = self.plane_client.create_work_items(
-            workspace_slug, project_id, work_items
-        )
+        success = self.client.create_work_items(workspace_slug, project_id, work_items)
 
         if success:
             logger.success("All work items successfully posted to Plane.")
@@ -127,6 +128,15 @@ class WorkflowManager:
         logger.info("--- WorkflowManager Run Complete ---")
 
     @staticmethod
-    def default():
+    def ollama_plane():
         config = Config()
-        return WorkflowManager(config)
+        agent = OllamaAgent(config)
+        client = PlaneClient(config)
+        return WorkflowManager(agent, client, config)
+
+    @staticmethod
+    def ollama_azure():
+        config = Config()
+        agent = OllamaAgent(config)
+        client = PlaneClient(config)
+        return WorkflowManager(agent, client, config)

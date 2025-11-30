@@ -1,17 +1,13 @@
-from abc import ABC
 import ollama
-from ollama import Client, ResponseError
-import requests.exceptions
-import json
-import os
-import sys
+from ollama import Client
 
+from clarity.agents.interface import IAgent
 from clarity.config import Config
 from clarity.work_item import WorkItemList
 from clarity.log import logger
 
 
-class OllamaClient:
+class OllamaAgent(IAgent):
     def __init__(self, config: Config) -> None:
         self.model_name: str = config.MODEL_NAME
 
@@ -19,7 +15,7 @@ class OllamaClient:
         self.client: Client = ollama_client
 
     def generate_work_items(self, prompt: str, transcript: str) -> str:
-        """Sends the transcript and prompt to the local Ollama API using the OllamaClient."""
+        """Sends the transcript and prompt to the local Ollama API using the OllamaAgent."""
         # 3. Use the imported 'logger' directly
         logger.info(f"Sending transcript to {self.model_name} for analysis...")
 

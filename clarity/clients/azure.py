@@ -1,23 +1,19 @@
 import requests
-from typing import List, Any
-import os  # Import os for robust URL joining
+from typing import List
 
-# Assuming these are defined and imported from your project
 from clarity.config import Config
 from clarity.work_item import WorkItem
 from clarity.log import logger
+from clarity.clients.interface import IClient
 
 
-class PlaneClient:
+class AzureClient(IClient):
     def __init__(self, config: Config):
-        # Configuration setup
-        # Ensure self.host_url is clean (e.g., just 'localhost:80' or 'plane.io')
-        self.host_url: str = config.PLANE_HOST_URL.rstrip("/")
-        self.api_token: str = config.PLANE_API_TOKEN
+        self.host_url: str = config.AZURE_HOST_URL
+        self.pat: str = config.AZURE_PAT
 
-        # Standard headers for Plane API requests
         self.headers: dict = {
-            "x-api-key": f"{self.api_token}",
+            # "x-api-key": f"{self.api_token}",
             "Content-Type": "application/json",
         }
 
@@ -58,7 +54,7 @@ class PlaneClient:
         self, workspace_slug: str, project_id: str, work_item: WorkItem
     ) -> bool:
 
-        payload = work_item.to_plane_json_payload()
+        payload = work_item.to_azure_json_payload()
         item_name = payload.get(
             "name", "Unknown Work Item"
         )  # Safer way to get name for logs
