@@ -1,0 +1,6 @@
+data/
+agent_data/
+.venv/
+**/__pycache__/
+
+.env

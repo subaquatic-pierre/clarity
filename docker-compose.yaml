@@ -1,0 +1,50 @@
+services:
+  # anythingllm:
+  #   image: mintplexlabs/anythingllm
+  #   container_name: anythingllm
+
+  #   cap_add:
+  #     - SYS_ADMIN
+  #   env_file: ./.env
+
+  #   ports:
+  #     - "3001:3001"
+
+  #   environment:
+  #     - JWT_SECRET=${JWT_SECRET}
+  #     - STORAGE_DIR=/app/server/storage # Set directly, as it's the internal path
+  #     - LLM_PROVIDER=ollama # Set directly to the provider name
+  #     - LLAMA_HOST=http://ollama:11434
+
+  #   volumes:
+  #     - ./data/anythingllm:/app/server/storage
+  #     - ./config.env:/app/server/.env
+
+  #   restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    env_file: ./.env
+
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - OLLAMA_HOST=0.0.0.0 # expose on all interfaces
+      - OLLAMA_LOG=info # info / debug / error
+      - OLLAMA_KEEP_ALIVE=-1
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia # For NVIDIA GPUs
+              count: all # Use all available GPUs
+              capabilities: [gpu]
+
+    ports:
+      - "11434:11434"
+
+    volumes:
+      - ./data/ollama:/root/.ollama
+
+    restart: unless-stopped
