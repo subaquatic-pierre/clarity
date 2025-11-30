@@ -3,7 +3,6 @@ import sys
 from dotenv import dotenv_values
 from typing import Dict, Any
 
-# --- Dynamic Path Calculation (as shown above) ---
 try:
     entry_script_path = os.path.abspath(sys.argv[0])
     base_directory = os.path.dirname(entry_script_path)
@@ -13,7 +12,6 @@ except Exception:
     base_directory = os.getcwd()
 
 ABSOLUTE_BASE_PATH = os.path.abspath(base_directory)
-# --------------------------------------------------
 
 
 class Config:
