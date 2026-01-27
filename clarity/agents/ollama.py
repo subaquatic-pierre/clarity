@@ -3,7 +3,7 @@ from ollama import Client
 
 from clarity.agents.interface import IAgent
 from clarity.config import Config
-from clarity.work_item import WorkItemList
+from clarity.models.work_item import WorkItemList
 from clarity.log import logger
 
 

@@ -7,7 +7,7 @@ import re
 import os
 
 from clarity.config import Config
-from clarity.work_item import WorkItem
+from clarity.models.work_item import WorkItem
 from clarity.log import logger
 
 

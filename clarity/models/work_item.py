@@ -30,6 +30,17 @@ class WorkItem(BaseModel):
         description="The specific application area or module affected (e.g., 'API', 'Frontend: Checkout', 'Database'). Default: null.",
     )
 
+    def _get_type(self) -> str:
+        type = {
+            "Task": "Task",
+            "Fix": "Bug",
+            "Chore": "Chore",
+            "Docs": "Documentation",
+        }.get(
+            self.task_type, "Task"
+        )  # Default to 'Task' if mapping fails
+        return type
+
     def to_plane_json_payload(self) -> dict:
         """
         Converts the WorkItem model into a dictionary formatted for the Plane API issue creation endpoint.
@@ -53,15 +64,6 @@ class WorkItem(BaseModel):
 
         html_desc = self.build_html_desc()
 
-        plane_type = {
-            "Task": "Task",
-            "Fix": "Bug",
-            "Chore": "Chore",
-            "Docs": "Documentation",
-        }.get(
-            self.task_type, "Task"
-        )  # Default to 'Task' if mapping fails
-
         payload = {
             "name": self.title,
             "description_html": html_desc,
@@ -88,63 +90,13 @@ class WorkItem(BaseModel):
 
         return payload
 
-    def to_github_payload(self) -> dict:
-        """
-        Converts the WorkItem model into a dictionary formatted for the Github API issue creation endpoint.
+    def to_github_issue(self) -> dict:
 
-        Expected payload:
-        {
-            "name": "<string>",
-            "description_html": "<string>",
-            "state": "<string>",
-            "assignees": ["<string>"],
-            "priority": "<string>",
-            "labels": ["<string>"],
-            "parent": "<string>",
-            "estimate_point": "<string>",
-            "type": "<string>",
-            "module": "<string>",
-            "start_date": "<string>",
-            "target_date": "<string>",
-        }
-        """
+        desc = self.build_markdown_desc()
 
-        html_desc = self.build_html_desc()
+        data = {"title": self.title, "body": desc, "type": "Task"}
 
-        plane_type = {
-            "Task": "Task",
-            "Fix": "Bug",
-            "Chore": "Chore",
-            "Docs": "Documentation",
-        }.get(
-            self.task_type, "Task"
-        )  # Default to 'Task' if mapping fails
-
-        payload = {
-            "name": self.title,
-            "description_html": html_desc,
-            # CRITICAL: These placeholders must be replaced with actual Project-specific IDs (UUIDs)
-            # "state": "Backlog",  # State name (e.g., 'Backlog', 'To Do') or UUID
-            # "assignees": [],  # List of User IDs (UUIDs)
-            # "priority": "Low",  # Priority name (e.g., 'Low', 'Medium', 'High') or UUID
-            # "labels": (
-            #     [self.component] if self.component else []
-            # ),  # Uses component as a label
-            # "parent": None,  # Used for sub-tasks; typically null/None for a top-level task
-            # "estimate_point": None,  # Points estimate (number or string representation)
-            # "type": plane_type,
-            # "module": None,  # Module ID (UUID)
-            # "start_date": None,  # YYYY-MM-DD
-            # "target_date": None,  # YYYY-MM-DD
-        }
-
-        # Clean up lists that might contain None/null values
-        # if not payload["assignees"]:
-        #     del payload["assignees"]
-        # if not payload["labels"]:
-        #     del payload["labels"]
-
-        return payload
+        return data
 
     def to_azure_json_payload(self, iteration) -> List[JsonPatchOperation]:
         """
@@ -168,17 +120,6 @@ class WorkItem(BaseModel):
             )
         )
 
-        # 3. Optionally add Assignee
-        # if self.assigned_to_email:
-        #     # Assignee is set via the email address in the 'System.AssignedTo' path
-        #     patch_document.append(
-        #         JsonPatchOperation(
-        #             op="add",
-        #             path="/fields/System.AssignedTo",
-        #             value=self.assigned_to_email,
-        #         )
-        #     )
-
         return patch_document
 
     def build_html_desc(self) -> str:
@@ -198,6 +139,30 @@ class WorkItem(BaseModel):
         html_desc += "</ol>\n"
 
         return html_desc
+
+    def build_markdown_desc(self) -> str:
+        # --- 1. Construct the GitHub-flavoured Markdown Description ---
+
+        md = []
+
+        # Description / Context
+        md.append("### Description / Context")
+        md.append(self.description.strip())
+        md.append("")
+
+        # Acceptance Criteria
+        md.append("### Acceptance Criteria")
+        for item in self.acceptance_criteria:
+            md.append(f"- {item}")
+        md.append("")
+
+        # Technical Breakdown
+        md.append("### Technical Breakdown")
+        for idx, item in enumerate(self.task_breakdown, start=1):
+            md.append(f"{idx}. {item}")
+        md.append("")
+
+        return "\n".join(md)
 
     @staticmethod
     def create_dummy_item() -> "WorkItem":

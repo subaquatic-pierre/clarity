@@ -2,7 +2,7 @@ import requests
 from typing import List, Any
 
 from clarity.config import Config
-from clarity.work_item import WorkItem
+from clarity.models.work_item import WorkItem
 from clarity.log import logger
 from clarity.clients.interface import ClientEnum, IClient
 

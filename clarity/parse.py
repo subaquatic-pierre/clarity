@@ -2,7 +2,7 @@ import json
 from typing import List
 
 from clarity.log import logger
-from clarity.work_item import WorkItem, WorkItemList
+from clarity.models.work_item import WorkItem, WorkItemList
 
 
 class WorkflowManagerParser:

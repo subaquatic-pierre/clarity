@@ -10,7 +10,7 @@ from clarity.clients.plane import PlaneClient
 from clarity.prompt import PromptType, SystemPrompt
 from clarity.storage import Storage
 from clarity.agents.ollama import OllamaAgent
-from clarity.work_item import WorkItem
+from clarity.models.work_item import WorkItem
 from clarity.config import Config
 
 
@@ -93,7 +93,7 @@ class WorkflowManager:
             return
 
         logger.info(
-            f"Attempting to create {len(work_items)} items in Plane Project {project}..."
+            f"Attempting to create {len(work_items)} items in Project {project}..."
         )
 
         success = self.client.create_work_items(
@@ -101,7 +101,7 @@ class WorkflowManager:
         )
 
         if success:
-            logger.success("All work items successfully posted to Plane.")
+            logger.success("All work items successfully created.")
         else:
             logger.error(
                 "One or more work items failed to post to Plane. Check previous error logs."
@@ -119,7 +119,8 @@ class WorkflowManager:
         logger.info("--- Starting WorkflowManager Run ---")
 
         # 1. Generate Work Items
-        work_items = self.generate_work_items(transcript_filename, prompt_type)
+        # work_items = self.generate_work_items(transcript_filename, prompt_type)
+        work_items = [WorkItem.create_dummy_item()]
 
         if not work_items:
             logger.error("Run aborted: No work items generated.")
@@ -128,7 +129,7 @@ class WorkflowManager:
         # 2. Save Locally
         self.save_work_items(work_items)
 
-        # 3. Create Plane Tasks
+        # 3. Create Tasks
         self.create_tasks(work_items, iteration)
 
         logger.info("--- WorkflowManager Run Complete ---")
