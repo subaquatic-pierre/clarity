@@ -2,15 +2,19 @@ import sys
 from clarity.clients.azure import AzureClient
 from clarity.config import Config
 from clarity.manager import WorkflowManager
+from clarity.prompt import PromptType
 from clarity.work_item import WorkItem
 
 if __name__ == "__main__":
     filename = sys.argv[1]
     pm = WorkflowManager.ollama_azure()
+    # pm = WorkflowManager.ollama_console()
+    # pm = WorkflowManager.ollama_plane()
 
-    iteration = "Iteration 1"
+    iteration = "TCS7"
+    prompt = PromptType.C
 
-    pm.run(filename, iteration=iteration)
+    pm.run(filename, prompt_type=prompt, iteration=iteration)
 
     # config = Config()
 

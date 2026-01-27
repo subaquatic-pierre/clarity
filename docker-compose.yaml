@@ -31,7 +31,7 @@ services:
       - CUDA_VISIBLE_DEVICES=0
       - OLLAMA_HOST=0.0.0.0 # expose on all interfaces
       - OLLAMA_LOG=info # info / debug / error
-      - OLLAMA_KEEP_ALIVE=-1
+      # - OLLAMA_KEEP_ALIVE=-1
 
     deploy:
       resources:

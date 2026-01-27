@@ -157,3 +157,10 @@ class WorkflowManager:
         agent = OllamaAgent(config)
         client = AzureClient(config)
         return WorkflowManager(agent, client, config)
+
+    @staticmethod
+    def ollama_console():
+        config = Config()
+        agent = OllamaAgent(config)
+        client = AzureClient(config)
+        return WorkflowManager(agent, client, config)

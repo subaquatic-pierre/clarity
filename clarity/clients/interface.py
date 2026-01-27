@@ -8,6 +8,7 @@ from clarity.work_item import WorkItem
 class ClientEnum(Enum):
     AZURE = "Azure"
     PLANE = "Plane"
+    CONSOLE = "Console"
 
 
 class IClient(ABC):

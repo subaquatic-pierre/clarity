@@ -3,6 +3,9 @@ import os
 import time
 from typing import List
 
+import re
+import os
+
 from clarity.config import Config
 from clarity.work_item import WorkItem
 from clarity.log import logger
@@ -52,6 +55,10 @@ class Storage:
                 f"Failed to read transcript file at {inpath}. Exception details: {e}"
             )
 
+        if inpath.endswith(".vtt"):
+            content = self.clean_vtt_string(content)
+            logger.success(f"Cleaned VTT content: {inpath}")
+
         return content
 
     def save_work_items(self, work_items: List[WorkItem]):
@@ -93,3 +100,27 @@ class Storage:
             os.makedirs(self.work_package_dir, exist_ok=True)
 
         logger.info("Data directories are ready.")
+
+    def clean_vtt_string(self, vtt_content: str) -> str:
+        """
+        Cleans a VTT transcript string by removing timestamps, cue numbers,
+        and the WEBVTT header, leaving only the spoken text.
+        """
+        # 1. Remove the WEBVTT header
+        vtt_content = re.sub(r"WEBVTT\n?", "", vtt_content)
+
+        # 2. Remove cue identifiers (optional, like '1', '2', '3', etc.)
+        # This assumes identifiers are simple numbers at the start of a line
+        vtt_content = re.sub(r"^\d+\n", "", vtt_content, flags=re.MULTILINE)
+
+        # 3. Remove timestamp lines (e.g., 00:00:01.630 --> 00:00:07.690)
+        # This is the most crucial step
+        vtt_content = re.sub(
+            r"^\d{2}:\d{2}:\d{2}\.\d{3} --> .+\n", "", vtt_content, flags=re.MULTILINE
+        )
+
+        # 4. Remove extra blank lines created by the removals
+        vtt_content = re.sub(r"\n{2,}", "\n", vtt_content)
+
+        # 5. Remove any leading/trailing whitespace
+        return vtt_content.strip()
