@@ -67,26 +67,7 @@ class WorkItem(BaseModel):
         payload = {
             "name": self.title,
             "description_html": html_desc,
-            # CRITICAL: These placeholders must be replaced with actual Project-specific IDs (UUIDs)
-            # "state": "Backlog",  # State name (e.g., 'Backlog', 'To Do') or UUID
-            # "assignees": [],  # List of User IDs (UUIDs)
-            # "priority": "Low",  # Priority name (e.g., 'Low', 'Medium', 'High') or UUID
-            # "labels": (
-            #     [self.component] if self.component else []
-            # ),  # Uses component as a label
-            # "parent": None,  # Used for sub-tasks; typically null/None for a top-level task
-            # "estimate_point": None,  # Points estimate (number or string representation)
-            # "type": plane_type,
-            # "module": None,  # Module ID (UUID)
-            # "start_date": None,  # YYYY-MM-DD
-            # "target_date": None,  # YYYY-MM-DD
         }
-
-        # Clean up lists that might contain None/null values
-        # if not payload["assignees"]:
-        #     del payload["assignees"]
-        # if not payload["labels"]:
-        #     del payload["labels"]
 
         return payload
 

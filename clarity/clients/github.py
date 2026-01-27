@@ -159,10 +159,11 @@ class GithubClient(IClient):
             f"{self.host_url}/orgs/{workspace}/projectsV2/{project}/items/{item_id}"
         )
         fields = self.build_update_fields(work_item, iteration)
+        if not fields:
+            return
 
         update_payload: dict = {"fields": fields}
 
-        print(f"update_payload: {update_payload}")
         res = requests.patch(update_item_url, headers=headers, json=update_payload)
         res.raise_for_status()
         project_item = res.json()
@@ -172,13 +173,6 @@ class GithubClient(IClient):
 
     def build_update_fields(self, work_item: WorkItem, iteration: str) -> List[dict]:
         fields = []
-
-        # type_field = self.get_field("Type")
-        # work_item_type = work_item.task_type
-        # if type_field and work_item_type:
-        #     fields.append(
-        #         {"id": type_field.id, "value": work_item_type},  # Task type field
-        #     )
 
         status_field = self.get_field("Status")
         if status_field:

@@ -81,9 +81,6 @@ class WorkflowManager:
     def create_tasks(self, work_items: List[WorkItem], iteration: str) -> None:
         """Uploads the generated work items to the Plane project management tool."""
 
-        # workspace_project = self._get_workspace_project()
-        # workspace = workspace_project[0]
-        # project = workspace_project[1]
         [workspace, project] = self._get_workspace_project()
 
         if not workspace or not project:
@@ -119,8 +116,7 @@ class WorkflowManager:
         logger.info("--- Starting WorkflowManager Run ---")
 
         # 1. Generate Work Items
-        # work_items = self.generate_work_items(transcript_filename, prompt_type)
-        work_items = [WorkItem.create_dummy_item()]
+        work_items = self.generate_work_items(transcript_filename, prompt_type)
 
         if not work_items:
             logger.error("Run aborted: No work items generated.")
