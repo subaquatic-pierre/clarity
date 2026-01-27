@@ -9,6 +9,7 @@ class ClientEnum(Enum):
     AZURE = "Azure"
     PLANE = "Plane"
     CONSOLE = "Console"
+    GITHUB = "Github"
 
 
 class IClient(ABC):

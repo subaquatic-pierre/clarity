@@ -2,6 +2,7 @@ from typing import List
 
 from clarity.agents.interface import IAgent
 from clarity.clients.azure import AzureClient
+from clarity.clients.github import GithubClient
 from clarity.clients.interface import ClientEnum, IClient
 from clarity.log import logger
 from clarity.parse import WorkflowManagerParser
@@ -133,6 +134,9 @@ class WorkflowManager:
         logger.info("--- WorkflowManager Run Complete ---")
 
     def _get_workspace_project(self) -> List[str]:
+        # TODO: fix this, should not be switch over client type,
+        # should just be PROJECT and WORKSPACE, as all clients scope items,
+        # to workspaces and projects
         if self.client.name() == ClientEnum.AZURE:
             workspace = self.config.AZURE_WORKSPACE
             project = self.config.AZURE_PROJECT
@@ -140,6 +144,11 @@ class WorkflowManager:
         elif self.client.name() == ClientEnum.PLANE:
             workspace = self.config.PLANE_WORKSPACE_SLUG
             project = self.config.PLANE_PROJECT_ID
+            return [workspace, project]
+
+        elif self.client.name() == ClientEnum.GITHUB:
+            workspace = self.config.GITHUB_ORG
+            project = self.config.GITHUB_PROJECT
             return [workspace, project]
 
         return []
@@ -163,4 +172,11 @@ class WorkflowManager:
         config = Config()
         agent = OllamaAgent(config)
         client = AzureClient(config)
+        return WorkflowManager(agent, client, config)
+
+    @staticmethod
+    def ollama_github():
+        config = Config()
+        agent = OllamaAgent(config)
+        client = GithubClient(config)
         return WorkflowManager(agent, client, config)

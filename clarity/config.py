@@ -48,6 +48,16 @@ class Config:
         "AZURE_WORKSPACE", "1e8bde5b-9e49-45a4-8b43-10341429f1e3"
     )
 
+    # Github Config
+    GITHUB_ORG = _env_config.get("GITHUB_ORG", "1e8bde5b-9e49-45a4-8b43-10341429f1e3")
+    GITHUB_PROJECT = _env_config.get(
+        "GITHUB_PROJECT", "1e8bde5b-9e49-45a4-8b43-10341429f1e3"
+    )
+    GITHUB_PAT = _env_config.get("GITHUB_PAT", "1e8bde5b-9e49-45a4-8b43-10341429f1e3")
+    GITHUB_HOST_URL = _env_config.get(
+        "GITHUB_HOST_URL", "1e8bde5b-9e49-45a4-8b43-10341429f1e3"
+    )
+
     TRANSCRIPT_REL_PATH = "data/transcripts"
     WORK_PACKAGE_REL_PATH = "data/work"
 

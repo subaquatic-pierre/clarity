@@ -88,6 +88,64 @@ class WorkItem(BaseModel):
 
         return payload
 
+    def to_github_payload(self) -> dict:
+        """
+        Converts the WorkItem model into a dictionary formatted for the Github API issue creation endpoint.
+
+        Expected payload:
+        {
+            "name": "<string>",
+            "description_html": "<string>",
+            "state": "<string>",
+            "assignees": ["<string>"],
+            "priority": "<string>",
+            "labels": ["<string>"],
+            "parent": "<string>",
+            "estimate_point": "<string>",
+            "type": "<string>",
+            "module": "<string>",
+            "start_date": "<string>",
+            "target_date": "<string>",
+        }
+        """
+
+        html_desc = self.build_html_desc()
+
+        plane_type = {
+            "Task": "Task",
+            "Fix": "Bug",
+            "Chore": "Chore",
+            "Docs": "Documentation",
+        }.get(
+            self.task_type, "Task"
+        )  # Default to 'Task' if mapping fails
+
+        payload = {
+            "name": self.title,
+            "description_html": html_desc,
+            # CRITICAL: These placeholders must be replaced with actual Project-specific IDs (UUIDs)
+            # "state": "Backlog",  # State name (e.g., 'Backlog', 'To Do') or UUID
+            # "assignees": [],  # List of User IDs (UUIDs)
+            # "priority": "Low",  # Priority name (e.g., 'Low', 'Medium', 'High') or UUID
+            # "labels": (
+            #     [self.component] if self.component else []
+            # ),  # Uses component as a label
+            # "parent": None,  # Used for sub-tasks; typically null/None for a top-level task
+            # "estimate_point": None,  # Points estimate (number or string representation)
+            # "type": plane_type,
+            # "module": None,  # Module ID (UUID)
+            # "start_date": None,  # YYYY-MM-DD
+            # "target_date": None,  # YYYY-MM-DD
+        }
+
+        # Clean up lists that might contain None/null values
+        # if not payload["assignees"]:
+        #     del payload["assignees"]
+        # if not payload["labels"]:
+        #     del payload["labels"]
+
+        return payload
+
     def to_azure_json_payload(self, iteration) -> List[JsonPatchOperation]:
         """
         Generates the required JSON Patch document for Azure DevOps API creation.
