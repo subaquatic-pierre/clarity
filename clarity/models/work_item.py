@@ -91,7 +91,9 @@ class WorkItem(BaseModel):
             JsonPatchOperation(op="add", path="/fields/System.Title", value=self.title),
             # 2. Add Description
             JsonPatchOperation(
-                op="add", path="/fields/System.Description", value=self.description
+                op="add",
+                path="/fields/System.Description",
+                value=self.build_html_desc(),
             ),
         ]
 

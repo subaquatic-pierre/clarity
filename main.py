@@ -9,13 +9,13 @@ from clarity.models.work_item import WorkItem
 if __name__ == "__main__":
     filename = sys.argv[1]
 
-    # pm = WorkflowManager.ollama_azure()
+    pm = WorkflowManager.ollama_azure()
     # pm = WorkflowManager.ollama_console()
     # pm = WorkflowManager.ollama_plane()
-    pm = WorkflowManager.ollama_github()
+    # pm = WorkflowManager.ollama_github()
 
-    iteration = "Backlog"
-    prompt = PromptType.C
+    iteration = "TCS8"
+    prompt = PromptType.B
 
     pm.run(filename, prompt_type=prompt, iteration=iteration)
 

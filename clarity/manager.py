@@ -2,6 +2,7 @@ from typing import List
 
 from clarity.agents.interface import IAgent
 from clarity.clients.azure import AzureClient
+from clarity.clients.console import ConsoleClient
 from clarity.clients.github import GithubClient
 from clarity.clients.interface import ClientEnum, IClient
 from clarity.log import logger
@@ -142,6 +143,10 @@ class WorkflowManager:
             workspace = self.config.PLANE_WORKSPACE_SLUG
             project = self.config.PLANE_PROJECT_ID
             return [workspace, project]
+        elif self.client.name() == ClientEnum.CONSOLE:
+            workspace = self.config.PLANE_WORKSPACE_SLUG
+            project = self.config.PLANE_PROJECT_ID
+            return [workspace, project]
 
         elif self.client.name() == ClientEnum.GITHUB:
             workspace = self.config.GITHUB_ORG
@@ -168,7 +173,7 @@ class WorkflowManager:
     def ollama_console():
         config = Config()
         agent = OllamaAgent(config)
-        client = AzureClient(config)
+        client = ConsoleClient(config)
         return WorkflowManager(agent, client, config)
 
     @staticmethod
