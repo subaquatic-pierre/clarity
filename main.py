@@ -14,7 +14,7 @@ if __name__ == "__main__":
     # pm = WorkflowManager.ollama_plane()
     # pm = WorkflowManager.ollama_github()
 
-    iteration = "TCS8"
+    iteration = "TCS9"
     prompt = PromptType.B
 
     pm.run(filename, prompt_type=prompt, iteration=iteration)

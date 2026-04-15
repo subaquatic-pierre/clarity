@@ -23,7 +23,7 @@ services:
   #   restart: unless-stopped
 
   ollama:
-    image: ollama/ollama
+    image: ollama/ollama:latest
     container_name: ollama
     env_file: ./.env
 
